@@ -1,0 +1,52 @@
+<!--<p>chapter-view works!</p>-->
+<p-toolbar class="opacity-80">
+    <ng-template pTemplate="start">
+        <p-button icon="pi pi-arrow-left" (onClick)="back()"></p-button>
+    </ng-template>
+    <ng-template pTemplate="center">
+        <div class="flex w-full">
+            <h1>{{ chapterData.name }}</h1>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="end">
+        <p-button [rounded]="true" label="Link zum Kapitel" icon="pi pi-link" iconPos="right"
+                size="small" severity="info" (onClick)="copyLink()"></p-button>
+    </ng-template>
+</p-toolbar>
+<div class="pt-1 pb-1">
+    <p-panel class="opacity-80" header="Kapitel Beschreibung" [toggleable]="true" [collapsed]="true" toggler="header">
+        {{ chapterData.chapter_description }}
+    </p-panel>
+</div>
+<!--<div>{{ chapter_id }}</div>
+    <div>{{ user_code }}</div>
+    <div>{{ tab_id }}</div>-->
+<p-tabView [(activeIndex)]="activeTab" class="w-full opacity-90">
+    <p-tabPanel *ngFor="let tab of chapterData.exercise_ids; let i=index" [header]="tab.exercise_tab_name">
+        <div class="flex justify-content-between align-content-center">
+            <p-button [rounded]="true" size="large" icon="pi pi-info-circle" severity="info" (onClick)="openInfo()"></p-button>
+            <div *ngIf="chapterData.exercise_ids[activeTab].audio_url != ''" class="flex justify-content-center">
+                <p-button size="large" [rounded]="true" [raised]="true"
+                [icon]="audio_icon" (onClick)="playPauseAudio()">
+                </p-button>
+            </div>
+            <p-button [rounded]="true" label="Link zum Tab" icon="pi pi-link" iconPos="right"
+                     size="small" severity="info" (onClick)="copyLink(i)">
+            </p-button>
+        </div>
+        <div>
+            <img [title]="tab.img_url" [src]="Media_HOST + tab.img_url"
+            alt="{{ tab.img_url }}" width="100%"/>
+        </div>
+    </p-tabPanel>
+</p-tabView>
+<p-toast position="bottom-center" key="bc"></p-toast>
+<p-dialog [header]="chapterData.name" [(visible)]="Info_visible" [style]="{ width: '50vw' }">
+    <ng-template pTemplate="header">
+        <span class="text-xl font-bold">{{chapterData.name}}</span>
+    </ng-template>
+    <p [innerHTML]="chapterData.exercise_ids[activeTab].exercise_description | markdown"></p>
+    <ng-template pTemplate="footer">
+        <p-button icon="pi pi-check" (click)="Info_visible=false" label="Ok" styleClass="p-button-text"></p-button>
+    </ng-template>
+</p-dialog>
