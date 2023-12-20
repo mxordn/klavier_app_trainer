@@ -16,6 +16,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 
 import { AppComponent } from './app.component';
 import { StartComponent } from './exercise-views/start/start.component';
+import { ImpressumComponent } from './impressum/impressum.component';
 import { EntryComponent } from './entry/entry.component';
 import { MarkdownPipe } from './markdown.pipe';
 import { AppRoutingModule } from './app-routing/app-routing.module';
@@ -27,6 +28,7 @@ import { APP_BASE_HREF } from '@angular/common';
   declarations: [
     AppComponent,
     StartComponent,
+    ImpressumComponent,
     EntryComponent,
     MarkdownPipe,
     ChapterViewComponent
