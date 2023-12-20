@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 export const HOST: string = 'https://klavier-app-api.satzlehre-online.de'
 export const Frontend_HOST: string = 'http://localhost:4200'
@@ -11,5 +12,9 @@ export const Frontend_HOST: string = 'http://localhost:4200'
 export class AppComponent {
   title = 'piano-lab-train';
 
-  constructor() {}
+  constructor(private router: Router) {}
+
+  open_impressum() {
+    this.router.navigate(['/impressum']);
+  }
 }

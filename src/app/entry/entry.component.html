@@ -1,7 +1,12 @@
-<h1>Piano Lab Training</h1>
-<h3>Code eingeben | Please enter code</h3>
+
+<div class="flex justify-content-center">
+    <div class="w-3 flex-column">
+        <h1>Piano Lab Training</h1>
+        <h3>Code eingeben | Please enter code</h3>
     
-<div class="p-inputgroup">
-    <input type="text" pInputText [formControl]="code" placeholder="Code"/>
-    <p-button type="button" icon="pi pi-arrow-right" styleClass="p-button-success" (onClick)="openCollection()"></p-button>
+        <div class="p-inputgroup">
+            <input type="text" pInputText [formControl]="code" placeholder="Code"/>
+            <p-button type="button" icon="pi pi-arrow-right" styleClass="p-button-success" (onClick)="openCollection()"></p-button>
+        </div>
+    </div>
 </div>

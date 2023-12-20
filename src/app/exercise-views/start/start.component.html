@@ -1,18 +1,21 @@
 <!--<p>start works!</p>-->
-<div class="flex w-full">
+<div class="w-10">
     <p-button class="opacity-90" [rounded]="true" [raised]="true"
             icon="pi pi-times-circle" (onClick)="closeCollection()"></p-button>
 </div>
-<div [innerHTML]="exerciseService.exercise.collection_description | markdown"></div>
-<div class="grid">
-    <p-card class="sm:col-12 md:col-6 lg:col-3 opacity-90" *ngFor="let chap of exerciseService.exercise.list_of_exercises" [header]="chap.name">
-
-        <div [innerHTML]="chap.chapter_description | markdown"></div>
-        <ng-template pTemplate="footer">
-            <div class="w-full">
-                <p-button [outlined]="true" icon="pi pi-arrow-right" (onClick)="openChapter(chap.id)"></p-button>
-            </div>
-        </ng-template>
-    </p-card>
-    <!--<app-chapter-view></app-chapter-view>-->
+<div class="flex justify-content-center">
+<div class="w-10 flex flex-column">
+    <div [innerHTML]="exerciseService.exercise.collection_description | markdown"></div>
+    <div class="grid">
+        <p-card class="sm:col-12 md:col-6 lg:col-3 opacity-90" *ngFor="let chap of exerciseService.exercise.list_of_exercises" [header]="chap.name">
+            <div [innerHTML]="chap.chapter_description | markdown"></div>
+            <ng-template pTemplate="footer">
+                <div class="w-full">
+                    <p-button [outlined]="true" icon="pi pi-arrow-right" (onClick)="openChapter(chap.id)"></p-button>
+                </div>
+            </ng-template>
+        </p-card>
+        <!--<app-chapter-view></app-chapter-view>-->
+    </div>
+</div>
 </div>
