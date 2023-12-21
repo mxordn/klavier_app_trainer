@@ -1,4 +1,4 @@
-import { TabModel } from "./tab";
+import { EmptyTab, TabModel } from "./tab";
 
 export interface ChapterModel {
     name: string,
@@ -15,7 +15,7 @@ export const EmptyChapter: ChapterModel = {
     collection_id: '',
     owner: '',
     chapter_description: '',
-    exercise_ids: [],
+    exercise_ids: [EmptyTab],
     order_num: 0,
     id: ''
 }
