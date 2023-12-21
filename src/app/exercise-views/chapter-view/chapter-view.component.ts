@@ -5,6 +5,7 @@ import { Frontend_HOST, HOST } from 'src/app/app.component';
 import { ExerciseService } from 'src/app/exercise.service';
 import { LoadService } from 'src/app/load.service';
 import { ChapterModel, EmptyChapter } from 'src/models/chapter';
+import { EmptyColl } from 'src/models/collection';
 
 @Component({
   selector: 'app-chapter-view',
@@ -51,22 +52,51 @@ export class ChapterViewComponent implements OnInit {
     //console.log('Child:', this.route.snapshot.children[0].paramMap.get('tab_num'));
     this.user_code = this.route.snapshot.queryParamMap.get('uc');
     this.chapter_id = this.route.snapshot.paramMap.get('chapter_id');
-    if (this.user_code) {
-      if (this.chapter_id) {
-        this.setChapter(this.chapter_id);
-        console.log('chapter set from user_code')
-      } else {
-        alert("Kapitel ID nicht angegeben.");
-        this.router.navigate(['home']);
-        return;
-      }
-    };
+    // if (this.user_code) {
+    //   if (this.chapter_id) {
+    //     this.setChapter(this.chapter_id);
+    //     console.log('chapter set from user_code')
+    //   } else {
+    //     alert("Kapitel ID nicht angegeben.");
+    //     this.router.navigate(['home']);
+    //     return;
+    //   }
+    // };
     
     console.log(localStorage.getItem('user_code'));
     if (this.user_code && this.user_code != localStorage.getItem('user_code')) {
       console.log('Loading…')
-      this.loadService.getCollectionByUserCode(this.user_code);
-      return;
+      const resp = this.loadService.getCollectionByUserCode(this.user_code);
+      resp.subscribe({
+        next: (res) => {
+          if (res) {
+            this.exerciseService.exercise = res;
+            this.loadService.sortChapters(this.exerciseService.exercise.list_of_exercises);
+            this.exerciseService.exercise.list_of_exercises.forEach((chap) => {
+              this.loadService.sortTabs(chap.exercise_ids);
+            });
+            console.log(this.exerciseService.exercise.list_of_exercises)
+            this.exerciseService.ex_loaded = true;
+            localStorage.setItem('user_code', this.user_code!)
+            localStorage.setItem('exercise', JSON.stringify(this.exerciseService.exercise));
+          } else {
+            this.exerciseService.exercise = EmptyColl;
+            this.exerciseService.ex_loaded = false;
+            this.router.navigate(['home']);
+            return;
+          }
+        },
+        error: (err) => {
+          console.log(err);
+          this.router.navigate(['home']);
+        },
+        complete: () => {
+          console.log('Successfully opened!');
+          this.exerciseService.newCollectionSet.next('set');
+          this.setChapter(this.chapter_id);
+        }
+      });
+      // return;
     } else {
       console.log("Loading Chapter from LocalStorage");
       if (this.chapter_id) {
@@ -141,11 +171,12 @@ export class ChapterViewComponent implements OnInit {
   }
 
   copyLink(tab: number=0) {
+    const queryParam: string = '?uc=' + this.exerciseService.exercise.user_code;
     if (tab === 0) {
-      navigator.clipboard.writeText(Frontend_HOST + '/chapter/' + this.chapterData.id);
+      navigator.clipboard.writeText(Frontend_HOST + '/chapter/' + this.chapterData.id + queryParam);
     }
     if (tab != 0) {
-      navigator.clipboard.writeText(Frontend_HOST + '/chapter/' + this.chapterData.id + '/' + tab.toString());
+      navigator.clipboard.writeText(Frontend_HOST + '/chapter/' + this.chapterData.id + '/' + tab.toString() + queryParam);
     }
     this.messageService.add({key: 'bc', severity: 'success', summary: 'Kopiert', detail: 'Link in die Zwischenablage kopiert.'});
     console.log(this.messageService);

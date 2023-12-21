@@ -34,36 +34,8 @@ export class LoadService {
               private hC: HttpClient,
               private router: Router) {}
 
-  async getCollectionByUserCode(user_code: string) {
-    this.hC.get<CollectionModel>(HOST + '/get_collection/' + user_code).subscribe({
-      next: (res) => {
-        if (res) {
-          this.exerciseService.exercise = res;
-          this.sortChapters(this.exerciseService.exercise.list_of_exercises);
-          this.exerciseService.exercise.list_of_exercises.forEach((chap) => {
-            this.sortTabs(chap.exercise_ids);
-          });
-          console.log(this.exerciseService.exercise.list_of_exercises)
-          this.exerciseService.ex_loaded = true;
-          localStorage.setItem('user_code', user_code)
-          localStorage.setItem('exercise', JSON.stringify(this.exerciseService.exercise));
-        } else {
-          this.exerciseService.exercise = EmptyColl;
-          this.exerciseService.ex_loaded = false;
-          this.router.navigate(['home']);
-          return;
-        }
-      },
-      error: (err) => {
-        console.log(err);
-        this.router.navigate(['home']);
-        return;
-      },
-      complete: () => {
-        console.log('Successfully opened!');
-        this.exerciseService.newCollectionSet.next('set');
-      }
-    });
+  getCollectionByUserCode(user_code: string): Observable<CollectionModel> {
+    return this.hC.get<CollectionModel>(HOST + '/get_collection/' + user_code);
   }
 
   sortChapters(chapters: Array<ChapterModel>): Array<ChapterModel> {

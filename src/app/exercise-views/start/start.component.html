@@ -1,10 +1,17 @@
 <!--<p>start works!</p>-->
-<div class="w-10">
-    <p-button class="opacity-90" [rounded]="true" [raised]="true"
+<div class="flex justify-content-between">
+    <a href="home">
+        <div class="flex align-items-center">
+            <img class="logo" src="./assets/piano-logo-crop-klein.png" alt="Logo"><p class="text-primary pl-2">Piano App Trainer</p>
+        </div>
+    </a>
+    <div class="flex align-items-center">
+        <p-button [rounded]="true" [raised]="true"
             icon="pi pi-times-circle" (onClick)="closeCollection()"></p-button>
+    </div>
 </div>
 <div class="flex justify-content-center">
-<div class="w-10 flex flex-column">
+<div class="lg:w-10 md:w-12 sm:w-12 flex flex-column">
     <div [innerHTML]="exerciseService.exercise.collection_description | markdown"></div>
     <div class="grid">
         <p-card class="sm:col-12 md:col-6 lg:col-3 opacity-90" *ngFor="let chap of exerciseService.exercise.list_of_exercises" [header]="chap.name">
