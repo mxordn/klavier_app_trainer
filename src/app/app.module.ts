@@ -5,8 +5,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { InputTextModule } from 'primeng/inputtext';
+import { AutoFocusModule } from 'primeng/autofocus';
 import { ButtonModule } from 'primeng/button';
-import { Card, CardModule } from 'primeng/card';
+import { CardModule } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
 import { MessagesModule } from 'primeng/messages';
 import { PanelModule } from 'primeng/panel';
@@ -36,6 +37,7 @@ import { APP_BASE_HREF } from '@angular/common';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    AutoFocusModule,
     CardModule,
     DialogModule,
     AppRoutingModule,
