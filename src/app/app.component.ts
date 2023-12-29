@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 export const HOST: string = 'https://klavier-app-api.satzlehre-online.de'
-export const Frontend_HOST: string = 'https://piano-lab.satzlehre-online.de'
+export const Frontend_HOST: string = 'https://piano-lab.satzlehre-online.de/trainer'
 //'http://localhost:4200'
 
 @Component({

@@ -66,6 +66,8 @@ export class ChapterViewComponent implements OnInit {
     console.log(localStorage.getItem('user_code'));
     if (this.user_code && this.user_code != localStorage.getItem('user_code')) {
       console.log('Loading…')
+
+      this.Media_HOST = HOST + '/serve_media/' + this.user_code + '/';
       const resp = this.loadService.getCollectionByUserCode(this.user_code);
       resp.subscribe({
         next: (res) => {
@@ -94,6 +96,20 @@ export class ChapterViewComponent implements OnInit {
           console.log('Successfully opened!');
           this.exerciseService.newCollectionSet.next('set');
           this.setChapter(this.chapter_id);
+          //look for tab info
+          if (this.route.snapshot.children.length != 0) {
+            let tab_info = this.route.snapshot.children[0].paramMap.get('tab_num');
+            if (tab_info) {
+              let tab_num: number = parseInt(tab_info);
+              console.log(tab_num, this.chapterData.exercise_ids.length)
+              if (tab_num <= this.chapterData.exercise_ids.length) {
+                this.activeTab = tab_num;
+                console.log('Tab', this.activeTab);
+              } else {
+                alert("Tab nicht gefunden");
+              }
+            }
+          }
         }
       });
       // return;
@@ -104,19 +120,6 @@ export class ChapterViewComponent implements OnInit {
       }
     }
     
-    if (this.route.snapshot.children.length != 0) {
-      let tab_info = this.route.snapshot.children[0].paramMap.get('tab_num');
-      if (tab_info) {
-        let tab_num: number = parseInt(tab_info);
-        console.log(tab_num, this.chapterData.exercise_ids.length)
-        if (tab_num <= this.chapterData.exercise_ids.length) {
-          this.activeTab = tab_num;
-          console.log('Tab', this.activeTab);
-        } else {
-          alert("Tab nicht gefunden");
-        }
-      }
-    }
     // if (this.route.snapshot.paramMap.get('chapter_id')) {
     //   let chapter_id: string = this.route.snapshot.paramMap.get('chapter_id')!;
     //   this.exerciseService.exercise.list_of_exercises.forEach((chap) => {
@@ -136,6 +139,7 @@ export class ChapterViewComponent implements OnInit {
     this.exerciseService.exercise.list_of_exercises.forEach((chap) => {
       if (chap.id === chapter_id) {
         this.chapterData = chap;
+        this.Media_HOST = HOST + '/serve_media/' + this.exerciseService.exercise.user_code + '/';
         console.log('chapter set!')
         return;
       }
