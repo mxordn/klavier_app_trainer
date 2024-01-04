@@ -16,4 +16,12 @@ export class ExerciseService {
     }
     this.newCollectionSet = new BehaviorSubject('empty');
   }
+
+  set_exercise(ex: CollectionModel) {
+    this.exercise = ex;
+    this.exercise.list_of_exercises.sort((a, b) => a.order_num - b.order_num);
+    this.exercise.list_of_exercises.forEach((e) => {
+      e.exercise_ids.sort((a, b) => a.order_num - b.order_num);
+    });
+  }
 }
