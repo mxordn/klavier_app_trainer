@@ -28,7 +28,7 @@ export class EntryComponent {
         next: (res) => {
           console.log('Response', res)
           if (res) {
-            this.exerciseService.exercise = res;
+            this.exerciseService.set_exercise(res);
             this.exerciseService.ex_loaded = true;
           } else {
             alert("Exercise not on the server.");
