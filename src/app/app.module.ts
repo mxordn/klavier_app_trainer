@@ -9,14 +9,18 @@ import { AutoFocusModule } from 'primeng/autofocus';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
+import { DividerModule } from 'primeng/divider';
+import { ListboxModule } from 'primeng/listbox';
 import { MessagesModule } from 'primeng/messages';
 import { PanelModule } from 'primeng/panel';
 import { TabViewModule } from 'primeng/tabview';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
+import { SidebarModule } from 'primeng/sidebar';
 
 import { AppComponent } from './app.component';
 import { StartComponent } from './exercise-views/start/start.component';
+import { CourseStartComponent } from './exercise-views/course-start/course-start.component';
 import { ImpressumComponent } from './impressum/impressum.component';
 import { EntryComponent } from './entry/entry.component';
 import { MarkdownPipe } from './markdown.pipe';
@@ -32,7 +36,8 @@ import { APP_BASE_HREF } from '@angular/common';
     ImpressumComponent,
     EntryComponent,
     MarkdownPipe,
-    ChapterViewComponent
+    ChapterViewComponent,
+    CourseStartComponent
   ],
   imports: [
     BrowserModule,
@@ -40,16 +45,19 @@ import { APP_BASE_HREF } from '@angular/common';
     AutoFocusModule,
     CardModule,
     DialogModule,
+    DividerModule,
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule,
     InputTextModule,
     ButtonModule,
+    ListboxModule,
     MessagesModule,
     PanelModule,
+    SidebarModule,
     TabViewModule,
     ToastModule,
-    ToolbarModule
+    ToolbarModule,
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/trainer/'}

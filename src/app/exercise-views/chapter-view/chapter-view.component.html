@@ -1,10 +1,42 @@
 <!--<p>chapter-view works!</p>-->
+<p-sidebar [(visible)]="sidebarVisible">
+    <ng-template pTemplate="header">
+        <h3>Inhalt {{ exerciseService.exercise.display_name }}</h3>
+        <div></div>
+    </ng-template>
+    <ng-template pTemplate="content" class="max-h-screen">
+        <p-listbox [options]="exerciseService.content_structure" [group]="true"
+         optionLabel="name" (onDblClick)="openChapterFromSidebar($event)"
+         class="w-full md:w-30rem max-h-screen" scrollHeight="100%">
+            <ng-template let-group pTemplate="group">
+                <div class="flex align-items-center gap-2">
+                    <span>{{ group.label }}</span>
+                </div>
+            </ng-template>
+            <ng-template let-item pTemplate="item">
+                <div class="flex align-items-center gap-2">
+                    <i class="pi pi-bookmark"></i>
+                    <span>{{ item.label }}</span>
+                </div>
+            </ng-template>
+        </p-listbox>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <div>User Code: {{ exerciseService.current_user_code }}</div>
+    </ng-template>
+</p-sidebar>
 <div class="flex justify-content-center">
     <div class="lg:w-10 md:w-12 sm:w-12">
         <div class="flex-column">
             <p-toolbar class="opacity-80">
                 <ng-template pTemplate="start">
-                    <p-button icon="pi pi-arrow-left" (onClick)="back()"></p-button>
+                    <div>
+                        <p-button icon="pi pi-arrow-left" (onClick)="back()"></p-button>
+                        <p-button icon="pi pi-list" [rounded]="true" class="ml-3"
+                                [raised]="true" severity="info"
+                                (click)="toggleSidebar()">
+                        </p-button>
+                    </div>
                 </ng-template>
                 <ng-template pTemplate="center">
                     <div class="flex w-full">
@@ -25,21 +57,23 @@
                 <div>{{ user_code }}</div>
                 <div>{{ tab_id }}</div>-->
             <p-tabView [(activeIndex)]="activeTab" class="w-full opacity-90">
-                <p-tabPanel *ngFor="let tab of chapterData.exercise_ids; let i=index" [header]="tab.exercise_tab_name">
-                    <div class="flex justify-content-between align-content-center">
-                        <p-button [rounded]="true" size="large" icon="pi pi-info-circle" severity="info" (onClick)="openInfo()"></p-button>
-                        <div *ngIf="chapterData.exercise_ids[activeTab].audio_url != ''" class="flex justify-content-center">
-                            <p-button size="large" [rounded]="true" [raised]="true"
-                            [icon]="audio_icon" (onClick)="playPauseAudio()">
+                <p-tabPanel *ngFor="let tab of chapterData.exercise_ids; let i=index" [header]="tab.exercise_tab_name" [disabled]="!tab.is_active">
+                    <div *ngIf="tab.is_active">
+                        <div class="flex justify-content-between align-content-center">
+                            <p-button [rounded]="true" size="large" icon="pi pi-info-circle" severity="info" (onClick)="openInfo()"></p-button>
+                            <div *ngIf="chapterData.exercise_ids[activeTab].audio_url != ''" class="flex justify-content-center">
+                                <p-button size="large" [rounded]="true" [raised]="true"
+                                [icon]="audio_icon" (onClick)="playPauseAudio()">
+                            </p-button>
+                            </div>
+                            <p-button [rounded]="true" label="Link zum Tab" icon="pi pi-link" iconPos="right"
+                                size="small" severity="info" (onClick)="copyLink(i)">
                             </p-button>
                         </div>
-                        <p-button [rounded]="true" label="Link zum Tab" icon="pi pi-link" iconPos="right"
-                                size="small" severity="info" (onClick)="copyLink(i)">
-                        </p-button>
-                    </div>
-                    <div>
-                        <img [title]="tab.img_url" [src]="Media_HOST + tab.img_url"
-                        alt="{{ tab.img_url }}" width="100%"/>
+                        <div>
+                            <img [title]="tab.img_url" [src]="Media_HOST + tab.img_url"
+                            alt="{{ tab.img_url }}" width="100%"/>
+                        </div>
                     </div>
                 </p-tabPanel>
             </p-tabView>

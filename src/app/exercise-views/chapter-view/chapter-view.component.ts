@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Frontend_HOST, HOST } from 'src/app/app.component';
+import { CourseOrCollection } from 'src/models/course';
 import { ExerciseService } from 'src/app/exercise.service';
 import { LoadService } from 'src/app/load.service';
 import { ChapterModel, EmptyChapter } from 'src/models/chapter';
-import { EmptyColl } from 'src/models/collection';
+import { CollectionModel, EmptyColl } from 'src/models/collection';
 
 @Component({
   selector: 'app-chapter-view',
@@ -22,6 +23,7 @@ export class ChapterViewComponent implements OnInit {
   audioPlayer = new Audio();
   activeTab: number = 0;
   Info_visible: boolean = false;
+  sidebarVisible: boolean = false;
 
   Media_HOST: string;
 
@@ -29,7 +31,7 @@ export class ChapterViewComponent implements OnInit {
               private loadService: LoadService,
               private router: Router,
               private messageService: MessageService,
-              private exerciseService: ExerciseService) {
+              public exerciseService: ExerciseService) {
     // this.exerciseService.newCollectionSet.subscribe((val) => {
     //   if (val === 'set') {
     //     this.setChapter(this.chapter_id)
@@ -62,27 +64,28 @@ export class ChapterViewComponent implements OnInit {
     //     return;
     //   }
     // };
-    
+
     console.log(localStorage.getItem('user_code'));
     if (this.user_code && this.user_code != localStorage.getItem('user_code')) {
-      console.log('Loading…')
+      console.log('Loading new exercise from server…')
 
       this.Media_HOST = HOST + '/serve_media/' + this.user_code + '/';
-      const resp = this.loadService.getCollectionByUserCode(this.user_code);
+      const resp = this.loadService.getCollectionOrCourseByUserCode(this.user_code);
       resp.subscribe({
-        next: (res) => {
+        next: (res: CourseOrCollection) => {
           if (res) {
-            this.exerciseService.exercise = res;
-            this.loadService.sortChapters(this.exerciseService.exercise.list_of_exercises);
-            this.exerciseService.exercise.list_of_exercises.forEach((chap) => {
-              this.loadService.sortTabs(chap.exercise_ids);
-            });
-            console.log(this.exerciseService.exercise.list_of_exercises)
+            this.exerciseService.set_exercise(res.type, res.collection, res.course);
+            // this.loadService.sortChapters(this.exerciseService.exercise.list_of_exercises);
+            // this.exerciseService.exercise.list_of_exercises.forEach((chap: ChapterModel) => {
+            //   this.loadService.sortTabs(chap.exercise_ids);
+            // });
+            // console.log(this.exerciseService.exercise.list_of_exercises)
             this.exerciseService.ex_loaded = true;
-            localStorage.setItem('user_code', this.user_code!)
-            localStorage.setItem('exercise', JSON.stringify(this.exerciseService.exercise));
+            this.loadService.writeToLS(res.type);
+            // localStorage.setItem('user_code', this.user_code!)
+            // localStorage.setItem('exercise', JSON.stringify(this.exerciseService.exercise));
           } else {
-            this.exerciseService.exercise = EmptyColl;
+            this.exerciseService.set_exercise('collection', EmptyColl);
             this.exerciseService.ex_loaded = false;
             this.router.navigate(['home']);
             return;
@@ -97,29 +100,49 @@ export class ChapterViewComponent implements OnInit {
           this.exerciseService.newCollectionSet.next('set');
           this.setChapter(this.chapter_id);
           //look for tab info
-          if (this.route.snapshot.children.length != 0) {
-            let tab_info = this.route.snapshot.children[0].paramMap.get('tab_num');
-            if (tab_info) {
-              let tab_num: number = parseInt(tab_info);
-              console.log(tab_num, this.chapterData.exercise_ids.length)
-              if (tab_num <= this.chapterData.exercise_ids.length) {
-                this.activeTab = tab_num;
-                console.log('Tab', this.activeTab);
-              } else {
-                alert("Tab nicht gefunden");
-              }
-            }
-          }
+          this.setTab();
         }
       });
       // return;
     } else {
-      console.log("Loading Chapter from LocalStorage");
+      console.log("Loading Chapter from LocalStorage", localStorage.getItem('type'));
+      this.exerciseService.set_exercise(localStorage.getItem('type')!,
+                 JSON.parse(localStorage.getItem('exercise')!),
+                 JSON.parse(localStorage.getItem('course')!));
       if (this.chapter_id) {
         this.setChapter(this.chapter_id);
+        this.setTab();
       }
     }
-    
+  }
+
+  private setTab() {
+    const tab_info = this.route.snapshot.queryParamMap.get('tab');
+    if (tab_info) {
+      let tab_num: number = parseInt(tab_info);
+      console.log(tab_num, this.chapterData.exercise_ids.length)
+      if (tab_num <= this.chapterData.exercise_ids.length) {
+        this.activeTab = tab_num;
+        console.log('Tab', this.activeTab);
+      } else {
+        alert("Tab nicht gefunden");
+      }
+    }
+  }
+
+  openChapterFromSidebar(e: any) {
+    console.log(e);
+    this.setChapter(e.option.value);
+    this.activeTab = 0;
+    this.sidebarVisible = false;
+  }
+
+  toggleSidebar() {
+    if (this.sidebarVisible === false) {
+      this.sidebarVisible = true
+    } else {
+      this.sidebarVisible = false;
+    }
     // if (this.route.snapshot.paramMap.get('chapter_id')) {
     //   let chapter_id: string = this.route.snapshot.paramMap.get('chapter_id')!;
     //   this.exerciseService.exercise.list_of_exercises.forEach((chap) => {
@@ -136,7 +159,22 @@ export class ChapterViewComponent implements OnInit {
   }
 
   setChapter(chapter_id: string | null) {
-    this.exerciseService.exercise.list_of_exercises.forEach((chap) => {
+    console.log("Chapter set begins", this.exerciseService.exercise_type === "course");
+    // probably need to set another exercise before moving to the chapter
+    if (this.exerciseService.exercise_type === "\"course\"") {
+      console.log("Chapter set begins again", this.exerciseService.exercise_type);
+      this.exerciseService.course.list_of_collections.forEach((c: CollectionModel) => {
+        console.log("Coll:", c.display_name, c.id, chapter_id);
+        c.list_of_exercises.forEach((chap) => {
+          console.log("Kapitel:", chap.name, chap.id, chapter_id);
+          if (chap.id === chapter_id) {
+            this.exerciseService.exercise = c;
+          }
+        });
+      });
+      console.log(this.exerciseService.exercise.id, chapter_id)
+    }
+    this.exerciseService.exercise.list_of_exercises.forEach((chap: ChapterModel) => {
       if (chap.id === chapter_id) {
         this.chapterData = chap;
         this.Media_HOST = HOST + '/serve_media/' + this.exerciseService.exercise.user_code + '/';
@@ -175,13 +213,11 @@ export class ChapterViewComponent implements OnInit {
   }
 
   copyLink(tab: number=0) {
-    const queryParam: string = '?uc=' + this.exerciseService.exercise.user_code;
-    if (tab === 0) {
-      navigator.clipboard.writeText(Frontend_HOST + '/chapter/' + this.chapterData.id + queryParam);
-    }
+    let queryParam: string = '?uc=' + this.exerciseService.exercise.user_code;
     if (tab != 0) {
-      navigator.clipboard.writeText(Frontend_HOST + '/chapter/' + this.chapterData.id + '/' + tab.toString() + queryParam);
+      queryParam += '&tab=' + tab;
     }
+    navigator.clipboard.writeText(Frontend_HOST + '/chapter/' + this.chapterData.id + queryParam);
     this.messageService.add({key: 'bc', severity: 'success', summary: 'Kopiert', detail: 'Link in die Zwischenablage kopiert.'});
     console.log(this.messageService);
     console.log('Link kopiert')

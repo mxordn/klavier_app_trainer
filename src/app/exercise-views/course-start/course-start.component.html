@@ -1,11 +1,11 @@
 <!--<p>start works!</p>-->
 <p-sidebar [(visible)]="sidebarVisible">
     <ng-template pTemplate="header">
-        <h3>Inhalt | {{ exerciseService.exercise.display_name }}</h3>
+        <h3>Inhalt | {{ exerciseService.course.display_name }}</h3>
     </ng-template>
     <ng-template pTemplate="content max-h-screen">
         <p-listbox [options]="exerciseService.content_structure" [group]="true"
-                    optionLabel="name" (onDblClick)="openChapterFromSidebar($event)"
+                    optionLabel="name" (onDblClick)="openCourseFromSidebar($event)"
                     class="w-full md:w-30rem max-h-screen" scrollHeight="100%">
             <ng-template let-group pTemplate="group">
                 <div class="flex align-items-center gap-2">
@@ -35,26 +35,23 @@
                 (onClick)="toggleSidebar()">
         </p-button>
     </div>
-    <div [hidden]="exerciseService.is_collection">
-      <p-button label="Zurück zum Kurs" class="flex align-items-center" [rounded]="true"
-              icon="pi pi-arrow-up" (onClick)="courseStart()">
-      </p-button>
-              <!-- Hallo -->
-    </div>
     <div class="flex align-items-center">
         <p-button [rounded]="true" [raised]="true"
-            icon="pi pi-times-circle" (onClick)="closeCollection()"></p-button>
+            icon="pi pi-times-circle" (onClick)="closeCourse()"></p-button>
     </div>
 </div>
 <div class="flex justify-content-center">
     <div class="lg:w-10 md:w-12 sm:w-12 flex flex-column">
-        <div [innerHTML]="exerciseService.exercise.collection_description | markdown"></div>
+        <h1 class="text-5xl">{{ exerciseService.course.display_name }}</h1>
+        <div [innerHTML]="exerciseService.course.course_description | markdown"></div>
+        <p-divider></p-divider>
         <div class="grid">
-            <p-card class="sm:col-12 md:col-6 lg:col-3 opacity-90" *ngFor="let chap of exerciseService.exercise.list_of_exercises" [header]="chap.name">
-                <div [innerHTML]="chap.chapter_description | markdown"></div>
+            <p-card class="sm:col-12 md:col-6 lg:col-4 opacity-90" [header]="coll.display_name"
+                     *ngFor="let coll of exerciseService.course.list_of_collections">
+                <p [innerHTML]="coll.collection_description | markdown"></p>
                 <ng-template pTemplate="footer">
                     <div class="w-full">
-                        <p-button [outlined]="true" icon="pi pi-arrow-right" (onClick)="openChapter(chap.id)"></p-button>
+                        <p-button [outlined]="true" icon="pi pi-arrow-right" (onClick)="openCollection(coll.id)"></p-button>
                     </div>
                 </ng-template>
             </p-card>

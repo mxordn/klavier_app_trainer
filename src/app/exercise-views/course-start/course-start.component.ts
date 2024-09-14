@@ -6,10 +6,10 @@ import { LoadService } from 'src/app/load.service';
 
 @Component({
   selector: 'app-start',
-  templateUrl: './start.component.html',
-  styleUrls: ['./start.component.scss']
+  templateUrl: './course-start.component.html',
+  styleUrls: ['./course-start.component.scss']
 })
-export class StartComponent implements OnInit {
+export class CourseStartComponent implements OnInit {
   sidebarVisible: boolean = false;
 
   constructor(public exerciseService: ExerciseService,
@@ -26,20 +26,12 @@ export class StartComponent implements OnInit {
       return;
     }
     else {
-      console.log("Course-check", this.exerciseService.exercise_type);
       if (uc != null && uc === localStorage.getItem('user_code')) {
         console.log('Load from local Storage…')
-        this.exerciseService.set_exercise(localStorage.getItem('type')!, JSON.parse(localStorage.getItem('exercise')!));
+        this.exerciseService.set_exercise(localStorage.getItem('type')!,
+             JSON.parse(localStorage.getItem('exercise')!),
+             JSON.parse(localStorage.getItem('course')!));
         return;
-      }
-      else if (this.exerciseService.exercise_type === "\"course\"") {
-        console.log("Course-check")
-        this.exerciseService.course.list_of_collections.forEach((coll) => {
-          if (coll.user_code === user_code) {
-            this.exerciseService.exercise = coll;
-            return;
-          }
-        });
       }
       else {
         console.log('Reload from server…');
@@ -55,9 +47,32 @@ export class StartComponent implements OnInit {
           });
         } else {
           alert('No user code given.');
+          this.router.navigate(['home']);
         }
       }
     }
+  }
+
+  openCollection(coll_id: string) {
+    console.log('Collection open', coll_id);
+    this.router.navigate(['start-exercise', coll_id])
+  }
+
+  openChapter(coll_id: string) {
+    console.log('Collection open', coll_id);
+    this.router.navigate(['chapter', coll_id])
+  }
+
+  openCourseFromSidebar(e: any) {
+    console.log("value:", e.option.value)
+    this.openChapter(e.option.value);
+    this.sidebarVisible = false;
+  }
+
+  closeCourse() {
+    localStorage.clear();
+    this.exerciseService.content_structure = [];
+    this.router.navigate(['home'])
   }
 
   toggleSidebar() {
@@ -66,31 +81,5 @@ export class StartComponent implements OnInit {
     } else {
       this.sidebarVisible = false;
     }
-  }
-
-  openChapterFromSidebar(e: any) {
-    this.openChapter(e.option.value);
-    this.sidebarVisible = false;
-  }
-
-  openChapter(chapterId: string) {
-    console.log('Chapter:', chapterId);
-    //console.log('lS:', this.exerciseService.exercise.list_of_exercises);
-
-    // this.exerciseService.exercise.list_of_exercises.forEach((chap) => {
-    //   if (chap.order_num === chapterIndex + 1) {
-    //     let chapterId: string = chap.id;
-    //   }
-    // });
-    this.router.navigate(['chapter', chapterId])
-  }
-  courseStart() {
-    this.router.navigate(['start-course', this.exerciseService.course.user_code])
-  }
-
-  closeCollection() {
-    localStorage.clear();
-    this.exerciseService.content_structure = [];
-    this.router.navigate(['home']);
   }
 }

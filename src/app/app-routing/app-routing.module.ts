@@ -5,10 +5,12 @@ import { EntryComponent } from '../entry/entry.component';
 import { StartComponent } from '../exercise-views/start/start.component';
 import { ChapterViewComponent } from '../exercise-views/chapter-view/chapter-view.component';
 import { ImpressumComponent } from '../impressum/impressum.component';
+import { CourseStartComponent } from '../exercise-views/course-start/course-start.component';
 
 const appRoutes: Routes = [
   {path: '', component: EntryComponent},
   {path: 'home', component: EntryComponent},
+  {path: 'start-course/:user_code', component: CourseStartComponent, canActivate: [], data: {customUrl: 'home'}},
   {path: 'start-exercise/:user_code', component: StartComponent, canActivate: [], data: {customUrl: 'home'}},
   {path: 'chapter/:chapter_id', component: ChapterViewComponent, children: [
     {path: ":tab_num", component: ChapterViewComponent}

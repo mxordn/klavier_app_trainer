@@ -7,6 +7,7 @@ import { HOST } from './app.component';
 import { Observable } from 'rxjs';
 import { ChapterModel } from 'src/models/chapter';
 import { TabModel } from 'src/models/tab';
+import { CourseModel, CourseOrCollection } from 'src/models/course';
 
 
 export const loadedActivation: CanActivateFn = (
@@ -31,11 +32,25 @@ export const loadedActivation: CanActivateFn = (
 export class LoadService {
 
   constructor(private exerciseService: ExerciseService,
-              private hC: HttpClient,
-              private router: Router) {}
+              private hC: HttpClient) {}
+
+  getCollectionOrCourseByUserCode(user_code: string): Observable<CourseOrCollection> {
+    return this.hC.get<CourseOrCollection>(HOST + '/get_collection_or_course/' + user_code);
+  }
 
   getCollectionByUserCode(user_code: string): Observable<CollectionModel> {
     return this.hC.get<CollectionModel>(HOST + '/get_collection/' + user_code);
+  }
+
+  getCourseByUserCode(user_code: string): Observable<CourseModel> {
+    return this.hC.get<CourseModel>(HOST + '/get_course/' + user_code);
+  }
+
+  writeToLS(ex_type: string) {
+    localStorage.setItem('user_code', this.exerciseService.exercise!.user_code!);
+    localStorage.setItem('course', JSON.stringify(this.exerciseService.course));
+    localStorage.setItem('exercise', JSON.stringify(this.exerciseService.exercise));
+    localStorage.setItem('type', JSON.stringify(ex_type));
   }
 
   sortChapters(chapters: Array<ChapterModel>): Array<ChapterModel> {
